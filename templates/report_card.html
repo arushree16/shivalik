@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block title %}Report Card - {{ student.name }}{% endblock %}
+
+{% block page_title %}Report Card{% endblock %}
+{% block page_subtitle %}{{ student.name }} - Class {{ student.class_name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    @media print {
+        .no-print {
+            display: none;
+        }
+        body {
+            padding: 0;
+            margin: 0;
+        }
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 10px 0;
+    }
+    th, td {
+        border: 1px solid black;
+        padding: 5px;
+        text-align: center;
+        font-size: 14px;
+    }
+    .student-info {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin: 15px 0;
+    }
+    .student-info div {
+        margin: 0;
+        font-size: 14px;
+    }
+    .signature-line {
+        border-top: 1px solid black;
+        margin-top: 30px;
+        width: 200px;
+        text-align: center;
+        font-size: 14px;
+    }
+    .title {
+        text-align: center;
+        font-size: 18px;
+        font-weight: bold;
+        margin: 10px 0;
+    }
+    .subtitle {
+        text-align: center;
+        font-size: 16px;
+        margin: 5px 0;
+    }
+</style>
+{% endblock %}
+
+{% block authenticated_content %}
+<div class="no-print mb-3">
+    <button onclick="window.print()" class="btn btn-primary">
+        <i class="bi bi-printer"></i> Print Report Card
+    </button>
+    <a href="{{ url_for('view_class', class_name=student.class_name) }}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Back to Class
+    </a>
+</div>
+
+<div>
+    <div class="title">SHIVALIK PUBLIC SCHOOL</div>
+    <div class="subtitle">PRIMARY PROGRESS REPORT CARD (2024-25)</div>
+
+    <div class="student-info">
+        <div>Name of Student: {{ student.name }}</div>
+        <div>Class & Section: {{ student.class_name }}</div>
+        <div>Roll No.: {{ student.roll_no }}</div>
+        <div>Admission No.: {{ student.admission_no }}</div>
+        <div>Father's Name: {{ student.fathers_name }}</div>
+        <div>Attendance: {{ attendance }}%</div>
+    </div>
+
+    <table>
+        <tr>
+            <th>SCHOLASTIC AREAS</th>
+            <th>PERIODIC TEST (10)</th>
+            <th>MULTIPLE ASSESSMENT (10)</th>
+            <th>PORTFOLIO (10)</th>
+            <th>SUB ENRICHMENT (10)</th>
+            <th>ANNUAL EXAM (60)</th>
+            <th>MARKS OBTAINED (100)</th>
+            <th>GRADE</th>
+        </tr>
+        {% for subject in ['ENGLISH', 'HINDI', 'MATHS', 'SCIENCE', 'S.S.T'] %}
+            {% set subject_lower = subject.lower().replace('.', '') %}
+            <tr>
+                <td>{{ subject }}</td>
+                <td>{{ student[subject_lower + '_pa']|default(0) }}</td>
+                <td>{{ student[subject_lower + '_ma']|default(0) }}</td>
+                <td>{{ student[subject_lower + '_portfolio']|default(0) }}</td>
+                <td>{{ student[subject_lower + '_se']|default(0) }}</td>
+                <td>{{ student[subject_lower + '_term']|default(0) }}</td>
+                <td>{{ subject_totals[subject_lower] }}</td>
+                <td>{{ subject_grades[subject_lower] }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    <div style="margin: 15px 0; font-size: 14px;">
+        <div>TOTAL MARKS OBTAINED: {{ total_marks }} OUT OF 500</div>
+        <div>PERCENTAGE: {{ "%.1f"|format(percentage) }}%</div>
+        <div>RESULT: {{ 'PASS' if passed else 'FAIL' }}</div>
+    </div>
+
+    <table>
+        <tr>
+            <th colspan="3">CO-SCHOLASTIC AREAS (GRADING ON 5 POINT SCALE A TO E)</th>
+        </tr>
+        <tr>
+            <td>G.K.: {{ student.gk_grade }}</td>
+            <td>COMPUTER: {{ student.computer_grade }}</td>
+            <td>DRAWING: {{ student.drawing_grade }}</td>
+        </tr>
+    </table>
+    
+
+
+    <div style="margin: 15px 0;">
+        <table>
+            <tr>
+                <th>REMARKS</th>
+            </tr>
+            <tr>
+                <td style="height: 40px; text-align: left; padding-left: 10px; font-size: 14px;">
+                    {% if passed %}
+                        GOOD PERFORMANCE
+                    {% else %}
+                        NEEDS IMPROVEMENT
+                    {% endif %}
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div style="margin-top: 30px; display: flex; justify-content: space-between;">
+        <div class="signature-line">CLASS TEACHER</div>
+        <div class="signature-line">PRINCIPAL</div>
+    </div>
+</div>
+{% endblock %}

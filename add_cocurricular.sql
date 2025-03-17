@@ -1,0 +1,5 @@
+ALTER TABLE student ADD COLUMN cocurricular_pa INTEGER DEFAULT 0;
+ALTER TABLE student ADD COLUMN cocurricular_ma INTEGER DEFAULT 0;
+ALTER TABLE student ADD COLUMN cocurricular_portfolio INTEGER DEFAULT 0;
+ALTER TABLE student ADD COLUMN cocurricular_se INTEGER DEFAULT 0;
+ALTER TABLE student ADD COLUMN cocurricular_term INTEGER DEFAULT 0;

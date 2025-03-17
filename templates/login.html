@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block auth_content %}
+<div class="login-container">
+    <div class="login-card">
+        <div class="login-form-side">
+            <div class="brand-logo">
+                <h1>Shivalik</h1>
+                <p>School Management System</p>
+            </div>
+
+            <div class="login-form">
+                <h2>Welcome back</h2>
+                <p class="subtitle">Please enter your credentials to access your class</p>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <form method="POST" action="{{ url_for('login') }}">
+                    {{ form.hidden_tag() }}
+                    <div class="form-group">
+                        {{ form.username(class="form-control", placeholder="Username", autocomplete="off") }}
+                        {% if form.username.errors %}
+                            {% for error in form.username.errors %}
+                                <div class="error-message">{{ error }}</div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        {{ form.password(class="form-control", placeholder="Password") }}
+                        {% if form.password.errors %}
+                            {% for error in form.password.errors %}
+                                <div class="error-message">{{ error }}</div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+                </form>
+
+                <div class="auth-footer">
+                    <p>Don't have an account? <a href="{{ url_for('register') }}">Register here</a></p>
+                </div>
+            </div>
+        </div>
+        <div class="login-image-side">
+            <img src="https://images.unsplash.com/photo-1577896851231-70ef18881754?q=80&w=1000" alt="Education">
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f5f5f5;
+        padding: 2rem;
+        margin: 0;
+    }
+
+    .login-container {
+        width: 100%;
+        max-width: 1200px;
+        margin: auto;
+    }
+
+    .login-card {
+        background: white;
+        border-radius: 24px;
+        overflow: hidden;
+        display: flex;
+        min-height: 600px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+    }
+
+    .login-form-side {
+        flex: 1;
+        padding: 3rem;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .login-image-side {
+        flex: 1;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .login-image-side img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+    }
+
+    .brand-logo {
+        margin-bottom: 3rem;
+    }
+
+    .brand-logo h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0;
+        background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .brand-logo p {
+        color: #666;
+        margin: 0;
+    }
+
+    .login-form {
+        max-width: 400px;
+    }
+
+    .login-form h2 {
+        font-size: 1.75rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--secondary-color);
+    }
+
+    .subtitle {
+        color: #666;
+        margin-bottom: 2rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-control {
+        background: #f8f9fa;
+        border: 2px solid #f8f9fa;
+        padding: 1rem 1.5rem;
+        font-size: 1rem;
+        border-radius: 12px;
+        width: 100%;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        background: white;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 4px rgba(255, 107, 53, 0.1);
+    }
+
+    .btn-block {
+        width: 100%;
+        padding: 1rem;
+        font-size: 1rem;
+        margin-top: 2rem;
+        border-radius: 12px;
+    }
+
+    .auth-footer {
+        margin-top: 2rem;
+        text-align: center;
+        color: #666;
+    }
+
+    .auth-footer a {
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .error-message {
+        color: #dc3545;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+    }
+
+    @media (max-width: 768px) {
+        .login-image-side {
+            display: none;
+        }
+        
+        .login-form-side {
+            padding: 2rem;
+        }
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,283 @@
+{% extends "base.html" %}
+
+{% block title %}Class {{ class_name }}{% endblock %}
+
+{% block page_title %}Class {{ class_name }}{% endblock %}
+{% block page_subtitle %}
+    <div class="d-flex justify-content-between align-items-center">
+        <span>Manage and view all students in your class</span>
+        <div>
+            <a href="{{ url_for('download_all_report_cards') }}" class="btn btn-success">
+                <i class="fas fa-download me-2"></i>Download All Report Cards
+            </a>
+            <a href="{{ url_for('add_student') }}" class="btn btn-primary ms-2">
+                <i class="fas fa-plus me-2"></i>Add Student
+            </a>
+        </div>
+    </div>
+{% endblock %}
+
+{% block authenticated_content %}
+<style>
+    .marks-table th, .marks-table td {
+        text-align: center;
+        min-width: 80px;
+        vertical-align: middle;
+    }
+    .subject-header {
+        background-color: #f8f9fa;
+        font-weight: bold;
+    }
+    .grade-badge {
+        font-size: 0.8rem;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-weight: 600;
+    }
+    .action-buttons {
+        display: flex;
+        gap: 8px;
+        justify-content: flex-end;
+    }
+    .action-buttons .btn {
+        padding: 0.25rem 0.5rem;
+        line-height: 1;
+    }
+    .action-buttons .btn i {
+        font-size: 1rem;
+    }
+    .progress-container {
+        width: 50px;
+    }
+    .progress-container .progress {
+        height: 6px;
+    }
+    .progress-container .progress-bar {
+        transition: width 0.3s ease;
+        width: var(--progress-width);
+    }
+</style>
+</style>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4>Class {{ class_name }} Students</h4>
+    <div>
+        <a href="#" 
+           class="btn btn-success" 
+           onclick="downloadMarksList(); return false;">
+            <i class="bi bi-download"></i> Download Marks List
+        </a>
+    </div>
+</div>
+
+<!-- Hidden iframe for downloads -->
+<iframe id="downloadFrame" style="display:none;"></iframe>
+
+<script>
+function downloadMarksList() {
+    document.getElementById('downloadFrame').src = "{{ url_for('download_marks_list', class_name=class_name) }}";
+}
+</script>
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Students List</h5>
+        <div class="input-group" style="width: 300px;">
+            <span class="input-group-text">
+                <i class="bi bi-search"></i>
+            </span>
+            <input type="text" class="form-control" id="studentSearch" placeholder="Search students...">
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover marks-table" id="studentsTable">
+            <thead>
+                <tr>
+                    <th rowspan="2">Roll No</th>
+                    <th rowspan="2" style="min-width: 200px;">Name</th>
+                    <th rowspan="2" style="min-width: 150px;">Father's Name</th>
+                    <th colspan="5" class="subject-header">Academic Subjects</th>
+                    <th class="subject-header">Co-curricular</th>
+                    <th colspan="3" class="subject-header">Activities</th>
+                    <th rowspan="2">Total</th>
+                    <th rowspan="2">%</th>
+                    <th rowspan="2" class="text-end">Actions</th>
+                </tr>
+                <tr>
+                    <th>English</th>
+                    <th>Hindi</th>
+                    <th>Maths</th>
+                    <th>Science</th>
+                    <th>SST</th>
+                    <th>Co-curricular</th>
+                    <th>G.K.</th>
+                    <th>Computer</th>
+                    <th>Drawing</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                <tr>
+                    <td>{{ student.roll_no }}</td>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <img src="https://ui-avatars.com/api/?name={{ student.name }}&size=32&background=random" 
+                                 class="rounded-circle" alt="{{ student.name }}">
+                            {{ student.name }}
+                        </div>
+                    </td>
+                    <td>{{ student.fathers_name }}</td>
+                    
+                    {% for subject in ['english', 'hindi', 'maths', 'science', 'sst'] %}
+                    <td>
+                        {% set pa = student[subject + '_pa']|default(0) %}
+                        {% set ma = student[subject + '_ma']|default(0) %}
+                        {% set portfolio = student[subject + '_portfolio']|default(0) %}
+                        {% set se = student[subject + '_se']|default(0) %}
+                        {% set term = student[subject + '_term']|default(0) %}
+                        {% set total = pa + ma + portfolio + se + term %}
+                        <div class="text-center">
+                            <div class="mb-1">{{ total }}</div>
+                            <span class="grade-badge badge bg-{{ 'success' if total >= 81 else 'primary' if total >= 61 else 'warning' if total >= 41 else 'danger' }}">
+                                {% if total >= 91 %}A1
+                                {% elif total >= 81 %}A2
+                                {% elif total >= 71 %}B1
+                                {% elif total >= 61 %}B2
+                                {% elif total >= 51 %}C1
+                                {% elif total >= 41 %}C2
+                                {% elif total >= 33 %}D
+                                {% else %}E
+                                {% endif %}
+                            </span>
+                        </div>
+                    </td>
+                    {% endfor %}
+                    
+                    <td>
+                        {% set pa = student.cocurricular_pa|default(0) %}
+                        {% set ma = student.cocurricular_ma|default(0) %}
+                        {% set portfolio = student.cocurricular_portfolio|default(0) %}
+                        {% set se = student.cocurricular_se|default(0) %}
+                        {% set term = student.cocurricular_term|default(0) %}
+                        {% set total = pa + ma + portfolio + se + term %}
+                        <div class="text-center">
+                            <div class="mb-1">{{ total }}</div>
+                            <span class="grade-badge badge bg-{{ 'success' if total >= 81 else 'primary' if total >= 61 else 'warning' if total >= 41 else 'danger' }}">
+                                {% if total >= 91 %}A1
+                                {% elif total >= 81 %}A2
+                                {% elif total >= 71 %}B1
+                                {% elif total >= 61 %}B2
+                                {% elif total >= 51 %}C1
+                                {% elif total >= 41 %}C2
+                                {% elif total >= 33 %}D
+                                {% else %}E
+                                {% endif %}
+                            </span>
+                        </div>
+                    </td>
+                    
+                    <td class="text-center">
+                        <span class="grade-badge badge bg-{{ 'success' if student.gk_grade in ['A', 'A1', 'A2'] else 'primary' if student.gk_grade in ['B', 'B1', 'B2'] else 'warning' if student.gk_grade in ['C', 'C1', 'C2'] else 'danger' }}">
+                            {{ student.gk_grade }}
+                        </span>
+                    </td>
+                    <td class="text-center">
+                        <span class="grade-badge badge bg-{{ 'success' if student.computer_grade in ['A', 'A1', 'A2'] else 'primary' if student.computer_grade in ['B', 'B1', 'B2'] else 'warning' if student.computer_grade in ['C', 'C1', 'C2'] else 'danger' }}">
+                            {{ student.computer_grade }}
+                        </span>
+                    </td>
+                    <td class="text-center">
+                        <span class="grade-badge badge bg-{{ 'success' if student.drawing_grade in ['A', 'A1', 'A2'] else 'primary' if student.drawing_grade in ['B', 'B1', 'B2'] else 'warning' if student.drawing_grade in ['C', 'C1', 'C2'] else 'danger' }}">
+                            {{ student.drawing_grade }}
+                        </span>
+                    </td>
+                    
+                    <td>
+                        {% set total = student.english_pa + student.english_ma + student.english_portfolio + student.english_se + student.english_term +
+                                     student.hindi_pa + student.hindi_ma + student.hindi_portfolio + student.hindi_se + student.hindi_term +
+                                     student.maths_pa + student.maths_ma + student.maths_portfolio + student.maths_se + student.maths_term +
+                                     student.science_pa + student.science_ma + student.science_portfolio + student.science_se + student.science_term +
+                                     student.sst_pa + student.sst_ma + student.sst_portfolio + student.sst_se + student.sst_term +
+                                     student.cocurricular_pa + student.cocurricular_ma + student.cocurricular_portfolio + student.cocurricular_se + student.cocurricular_term %}
+                        <strong>{{ total }}</strong>
+                    </td>
+                    <td>
+                        {% set percentage = (total / 600) * 100 %}
+                        <div class="d-flex align-items-center justify-content-center">
+                            <div class="text-center">
+                                <div class="mb-1">{{ "%.1f"|format(percentage) }}%</div>
+                                <div class="progress-container">
+                                    <div class="progress">
+                                        <div class="progress-bar bg-{{ 'success' if percentage >= 60 else 'warning' if percentage >= 33 else 'danger' }}" 
+                                             role="progressbar" 
+                                             style="width: {{ percentage }}%">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="text-end">
+                        <div class="action-buttons">
+                            <a href="{{ url_for('edit_student', student_id=student.id) }}" class="btn btn-sm btn-primary" title="Edit Student">
+                                <i class="bi bi-pencil"></i>
+                                <span class="ms-1">Edit</span>
+                            </a>
+                            <a href="{{ url_for('view_report_card', student_id=student.id) }}" class="btn btn-sm btn-success" title="View Report Card">
+                                <i class="bi bi-file-text"></i>
+                                <span class="ms-1">Report</span>
+                            </a>
+                            <form action="{{ url_for('delete_student', student_id=student.id) }}" method="POST" class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-danger" title="Delete Student" onclick="return confirm('Are you sure you want to delete this student?')">
+                                    <i class="bi bi-trash"></i>
+                                    <span class="ms-1">Delete</span>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{{ super() }}
+<script>
+document.getElementById('studentSearch').addEventListener('keyup', function() {
+    var searchText = this.value.toLowerCase();
+    var table = document.getElementById('studentsTable');
+    var rows = table.getElementsByTagName('tr');
+
+    for (var i = 2; i < rows.length; i++) {
+        var nameCell = rows[i].getElementsByTagName('td')[1];
+        var rollNoCell = rows[i].getElementsByTagName('td')[0];
+        var fatherNameCell = rows[i].getElementsByTagName('td')[2];
+        
+        if (nameCell && rollNoCell && fatherNameCell) {
+            var name = nameCell.textContent || nameCell.innerText;
+            var rollNo = rollNoCell.textContent || rollNoCell.innerText;
+            var fatherName = fatherNameCell.textContent || fatherNameCell.innerText;
+            
+            if (name.toLowerCase().indexOf(searchText) > -1 || 
+                rollNo.toLowerCase().indexOf(searchText) > -1 ||
+                fatherName.toLowerCase().indexOf(searchText) > -1) {
+                rows[i].style.display = '';
+            } else {
+                rows[i].style.display = 'none';
+            }
+        }
+    }
+});
+
+function handleDownload(event) {
+    // Don't prevent default - let the download happen
+    setTimeout(function() {
+        // Redirect after a short delay
+        window.location.href = "{{ url_for('index') }}";
+    }, 1000); // 1 second delay
+}
+</script>
+{% endblock %}

@@ -1,0 +1,87 @@
+""import openpyxl
+from jinja2 import Template
+
+# Load the Excel file
+file_path = "1 to 4 results sheet.xlsx"
+wb = openpyxl.load_workbook(file_path)
+sheet = wb.active
+
+# Extract student data
+students = []
+headers = [cell.value for cell in sheet[1]] # Extract headers from first row
+
+for row in sheet.iter_rows(min_row=2, values_only=True):
+student_data = dict(zip(headers, row))
+students.append(student_data)
+
+# HTML template for report card
+template_html = """
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Student Report Card</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .report-card {
+            width: 60%;
+            margin: auto;
+            border: 1px solid black;
+            padding: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            border: 1px solid black;
+            padding: 10px;
+            text-align: left;
+        }
+    </style>
+</head>
+
+<body>
+    {% for student in students %}
+    <div class="report-card">
+        <h2>Report Card</h2>
+        <p><strong>Name:</strong> {{ student['Student Name'] }}</p>
+        <p><strong>Class:</strong> {{ student['Class'] }}</p>
+        <table>
+            <tr>
+                <th>Subject</th>
+                <th>Marks</th>
+                <th>Grade</th>
+            </tr>
+            {% for subject, marks, grade in zip(student['Subject'].split(','), student['Marks'].split(','),
+            student['Grade'].split(',')) %}
+            <tr>
+                <td>{{ subject }}</td>
+                <td>{{ marks }}</td>
+                <td>{{ grade }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <hr>
+    {% endfor %}
+</body>
+
+</html>
+"""
+
+# Generate HTML report cards
+template = Template(template_html)
+html_output = template.render(students=students)
+
+# Save the output HTML file
+with open("report_cards.html", "w", encoding="utf-8") as file:
+file.write(html_output)
+
+print("Report cards generated successfully!")

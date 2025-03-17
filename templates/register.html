@@ -1,0 +1,251 @@
+{% extends "base.html" %}
+
+{% block title %}Register{% endblock %}
+
+{% block auth_content %}
+<div class="container mt-5">
+    <!-- Add flash messages section -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="text-center mb-4">Register</h2>
+                    <form method="POST" action="{{ url_for('register') }}" id="registerForm">
+                        {{ form.hidden_tag() }}
+                        <div class="form-group">
+                            {{ form.username(class="form-control", placeholder="Username", autocomplete="off") }}
+                            {% if form.username.errors %}
+                                {% for error in form.username.errors %}
+                                    <div class="error-message">{{ error }}</div>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group">
+                            {{ form.password(class="form-control", placeholder="Password") }}
+                            {% if form.password.errors %}
+                                {% for error in form.password.errors %}
+                                    <div class="error-message">{{ error }}</div>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group">
+                            {{ form.confirm_password(class="form-control", placeholder="Confirm Password") }}
+                            {% if form.confirm_password.errors %}
+                                {% for error in form.confirm_password.errors %}
+                                    <div class="error-message">{{ error }}</div>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group">
+                            {{ form.name(class="form-control", placeholder="Full Name") }}
+                            {% if form.name.errors %}
+                                {% for error in form.name.errors %}
+                                    <div class="error-message">{{ error }}</div>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group">
+                            {{ form.assigned_class(class="form-control", placeholder="Assigned Class (1-12)") }}
+                            {% if form.assigned_class.errors %}
+                                {% for error in form.assigned_class.errors %}
+                                    <div class="error-message">{{ error }}</div>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+
+                        <div class="d-grid">
+                            {{ form.submit(class="btn btn-primary") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f5f5f5;
+        padding: 2rem;
+        margin: 0;
+    }
+
+    .login-container {
+        width: 100%;
+        max-width: 1200px;
+        margin: auto;
+    }
+
+    .login-card {
+        background: white;
+        border-radius: 24px;
+        overflow: hidden;
+        display: flex;
+        min-height: 600px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+    }
+
+    .login-form-side {
+        flex: 1;
+        padding: 3rem;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .login-image-side {
+        flex: 1;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .login-image-side img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+    }
+
+    .brand-logo {
+        margin-bottom: 3rem;
+    }
+
+    .brand-logo h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0;
+        background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .brand-logo p {
+        color: #666;
+        margin: 0;
+    }
+
+    .login-form {
+        max-width: 400px;
+    }
+
+    .login-form h2 {
+        font-size: 1.75rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--secondary-color);
+    }
+
+    .subtitle {
+        color: #666;
+        margin-bottom: 2rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-control {
+        background: #f8f9fa;
+        border: 2px solid #f8f9fa;
+        padding: 1rem 1.5rem;
+        font-size: 1rem;
+        border-radius: 12px;
+        width: 100%;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        background: white;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 4px rgba(255, 107, 53, 0.1);
+    }
+
+    .btn-block {
+        width: 100%;
+        padding: 1rem;
+        font-size: 1rem;
+        margin-top: 2rem;
+        border-radius: 12px;
+    }
+
+    .auth-footer {
+        margin-top: 2rem;
+        text-align: center;
+        color: #666;
+    }
+
+    .auth-footer a {
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .error-message {
+        color: #dc3545;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+    }
+
+    @media (max-width: 768px) {
+        .login-image-side {
+            display: none;
+        }
+        
+        .login-form-side {
+            padding: 2rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.getElementById('registerForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const form = this;
+    
+    fetch(form.action, {
+        method: 'POST',
+        body: new FormData(form),
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => {
+        if (response.redirected) {
+            // Show success message before redirect
+            const alert = document.createElement('div');
+            alert.className = 'alert alert-success';
+            alert.textContent = 'Registered successfully! Redirecting to login...';
+            document.querySelector('.container').insertBefore(alert, document.querySelector('.row'));
+            
+            // Redirect after a short delay
+            setTimeout(() => {
+                window.location.href = response.url;
+            }, 1500);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+});
+</script>
+{% endblock %}

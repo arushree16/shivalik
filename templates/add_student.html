@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+
+{% block title %}Add Student{% endblock %}
+
+{% block page_title %}Add New Student{% endblock %}
+{% block page_subtitle %}Add a new student to Class {{ current_user.assigned_class }}{% endblock %}
+
+{% block authenticated_content %}
+<style>
+    .assessment-label {
+        min-width: 180px;
+        margin-bottom: 0.5rem;
+    }
+    .assessment-row {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+    .assessment-input {
+        width: 80px;
+    }
+</style>
+
+<div class="card">
+    <div class="card-body">
+        <form method="POST" class="mt-4">
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label class="form-label">Name</label>
+                    <input type="text" name="name" class="form-control" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Gender</label>
+                    <select name="gender" class="form-select" required>
+                        <option value="M">Male</option>
+                        <option value="F">Female</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Category</label>
+                    <input type="text" name="category" class="form-control" required>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label class="form-label">Religion</label>
+                    <input type="text" name="religion" class="form-control" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Father's Name</label>
+                    <input type="text" name="fathers_name" class="form-control" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Class</label>
+                    <input type="text" name="class_name" class="form-control" value="{{ current_user.assigned_class }}" readonly>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label class="form-label">Roll No</label>
+                    <input type="text" name="roll_no" class="form-control" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Admission No</label>
+                    <input type="text" name="admission_no" class="form-control" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Attendance (%)</label>
+                    <input type="number" name="attendance" class="form-control" min="80" max="100" value="80" required>
+                </div>
+            </div>
+
+            <h5 class="mt-4">Academic Performance</h5>
+            
+            {% for subject in ['english', 'hindi', 'maths', 'science', 'sst'] %}
+            <div class="card mb-3">
+                <div class="card-header">
+                    {{ subject|title }}
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col" style="min-width: 160px;">
+                            <label class="form-label d-block text-center">Periodic Assessment (10)</label>
+                            <input type="number" name="{{ subject }}_pa" class="form-control text-center" min="0" max="10" value="0">
+                        </div>
+                        <div class="col" style="min-width: 160px;">
+                            <label class="form-label d-block text-center">Multiple Assessment (10)</label>
+                            <input type="number" name="{{ subject }}_ma" class="form-control text-center" min="0" max="10" value="0">
+                        </div>
+                        <div class="col" style="min-width: 160px;">
+                            <label class="form-label d-block text-center">Portfolio (10)</label>
+                            <input type="number" name="{{ subject }}_portfolio" class="form-control text-center" min="0" max="10" value="0">
+                        </div>
+                        <div class="col" style="min-width: 160px;">
+                            <label class="form-label d-block text-center">Subject Enrichment (10)</label>
+                            <input type="number" name="{{ subject }}_se" class="form-control text-center" min="0" max="10" value="0">
+                        </div>
+                        <div class="col" style="min-width: 160px;">
+                            <label class="form-label d-block text-center">Term Assessment (60)</label>
+                            <input type="number" name="{{ subject }}_term" class="form-control text-center" min="0" max="60" value="0">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+
+            <div class="card mb-3">
+                <div class="card-header">
+                    Co-curricular
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col" style="min-width: 160px;">
+                            <label class="form-label d-block text-center">Periodic Assessment (10)</label>
+                            <input type="number" name="cocurricular_pa" class="form-control text-center" min="0" max="10" value="0">
+                        </div>
+                        <div class="col" style="min-width: 160px;">
+                            <label class="form-label d-block text-center">Multiple Assessment (10)</label>
+                            <input type="number" name="cocurricular_ma" class="form-control text-center" min="0" max="10" value="0">
+                        </div>
+                        <div class="col" style="min-width: 160px;">
+                            <label class="form-label d-block text-center">Portfolio (10)</label>
+                            <input type="number" name="cocurricular_portfolio" class="form-control text-center" min="0" max="10" value="0">
+                        </div>
+                        <div class="col" style="min-width: 160px;">
+                            <label class="form-label d-block text-center">Subject Enrichment (10)</label>
+                            <input type="number" name="cocurricular_se" class="form-control text-center" min="0" max="10" value="0">
+                        </div>
+                        <div class="col" style="min-width: 160px;">
+                            <label class="form-label d-block text-center">Term Assessment (60)</label>
+                            <input type="number" name="cocurricular_term" class="form-control text-center" min="0" max="60" value="0">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h5 class="mt-4">Activities</h5>
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label class="form-label">G.K.</label>
+                    <select name="gk_grade" class="form-select">
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                        <option value="E">E</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Computer</label>
+                    <select name="computer_grade" class="form-select">
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                        <option value="E">E</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Drawing</label>
+                    <select name="drawing_grade" class="form-select">
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                        <option value="E">E</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="text-end mt-4">
+                <button type="submit" class="btn btn-primary">Add Student</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
