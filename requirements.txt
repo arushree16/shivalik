@@ -17,4 +17,4 @@ reportlab==4.0.8
 PyPDF2==3.0.1
 xhtml2pdf==0.2.15
 WeasyPrint
-zipfile38==0.0.4
+zipfile38
