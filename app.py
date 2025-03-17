@@ -778,38 +778,16 @@ if __name__ == '__main__':
     with app.app_context():
         try:
             # Create the instance directory if it doesn't exist
-            if not os.path.exists('instance'):
-                os.makedirs('instance')
+            os.makedirs('instance', exist_ok=True)
             
-            # Create all database tables
-            db.create_all()
-            print("Database created successfully!")
-            
-            # Create default admin user
-            create_default_user()
-            print("Default admin user created!")
-            
+            # Create database if it doesn't exist
+            if not os.path.exists('instance/site.db'):
+                db.create_all()
+                create_default_user()
+                flash('Database created successfully!', 'success')
         except Exception as e:
-            print(f"Error setting up database: {str(e)}")
+            print(f"Error initializing database: {e}")
     
-    app.run(debug=True)
-
-if __name__ == '__main__':
-    with app.app_context():
-        try:
-            # Create the instance directory if it doesn't exist
-            if not os.path.exists('instance'):
-                os.makedirs('instance')
-            
-            # Create all database tables
-            db.create_all()
-            print("Database created successfully!")
-            
-            # Create default admin user
-            create_default_user()
-            print("Default admin user created!")
-            
-        except Exception as e:
-            print(f"Error setting up database: {str(e)}")
-    
-    app.run(debug=True)
+    # Get port from environment variable or use default
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
